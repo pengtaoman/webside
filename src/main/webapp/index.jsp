@@ -78,7 +78,7 @@ function getUnreadSmsCount() {
 					<small> 
 						<img src="${ctx }/resources/images/logo_no_title.png" height="30px"/>  
 					</small>
-					<small id="header_companyname">${userEntity.companyName}管理平台bbbb</small>
+					<small id="header_companyname">${userEntity.companyName}管理平台</small>
 				</div>
 				<input id="UR_TYPE_0" type="hidden" value="${userEntity.role.key}">
 				<!-- /section:basics/navbar.layout.brand -->
