@@ -179,8 +179,11 @@ var webside = {
                             $(".breadcrumb").html(breadcrumb);
                             //加载页面
                             $(".page-content").empty();//清除该节点子元素
+
+                            
                             $(".page-content").load(sys.rootPath + sn[sn.length - 1],function(data, statusTxt, xhr){
                             	layer.close(lay);
+                            
                             	if(statusTxt == "error" || statusTxt=="timeout" || statusTxt=="parsererror")
                             	{
                             		layer.msg("请求服务器超时,请重新登录或刷新浏览器再试!", {icon : 0});
