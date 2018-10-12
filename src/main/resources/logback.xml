@@ -67,7 +67,7 @@
 		<appender-ref ref="DEBUGAPPENDER" />
 	</appender>
 
-	<root level="INFO">
+	<root level="DEBUG">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="INFOAPPENDER" />
 	</root>
@@ -80,7 +80,7 @@
 		<appender-ref ref="ASYNC" />
 	</logger>
 	
-	<logger name="dao" level="WARN"  additivity="false">
+	<logger name="dao" level="DEBUG"  additivity="false">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="INFOAPPENDER" />
 	</logger>
