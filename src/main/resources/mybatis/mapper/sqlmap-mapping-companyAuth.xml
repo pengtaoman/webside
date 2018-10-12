@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webside.business.mapper.CompanyAuthMapper">
+	<!--mybatis ehcache缓存配置,以下两个<cache>标签二选一,第一个可以输出日志,第二个不输出日志 -->
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/> 
+	<!-- <cache type="org.mybatis.caches.ehcache.EhcacheCache"/> -->
+	<resultMap id="BaseResultMap" type="com.webside.business.model.CompanyAuthEntity">
+		<id property="id" column="id"/>
+		<result property="companyId" column="company_id" />
+		<result property="userId" column="user_id"/>
+		<result property="companyName" column="c_name" />
+		<result property="userName" column="u_name"/>
+		<result property="creatorId" column="creator_id"/>
+		<result property="authCode" column="auth_code"/>
+    	<result column="note" jdbcType="VARCHAR" property="note" />
+	    <result column="create_time"  property="createTime" />
+	    <result column="update_time" property="updateTime" />
+	</resultMap>
+	
+	<resultMap id="pairNameMap" type="com.webside.base.basemodel.PairName">
+		<id property="id" column="c_id"/>
+		<result property="text" column="c_name" />
+	</resultMap>
+	
+	<sql id="allFields">
+		company_id,
+		user_id,
+		creator_id,
+		c_name,
+		u_name,
+		auth_code,
+		create_time,
+		update_time
+	</sql>
+	
+	<select id="findById" parameterType="map" resultMap="BaseResultMap" flushCache="true" useCache="true">
+		select s1.*, s2.c_name from (
+		select t1.*, t2.u_name
+		from tb_company_auth t1 left join tb_user t2
+		on t1.user_id = t2.u_id ) s1 left join tb_company s2
+		on s1.company_id = s2.c_id
+		where id = #{id}
+	</select>
+	
+		
+	<select id="queryUserIdByCompanyId" parameterType="map" resultType="java.lang.Long" useCache="true">
+		select user_id from tb_company_auth 
+		where company_id = #{id}
+	</select>
+	
+		
+	<select id="queryCompanyIdByUserId" parameterType="map" resultType="java.lang.Long" useCache="true">
+		select company_id from tb_company_auth 
+		where user_id = #{id}
+	</select>
+	
+	<select id="queryListAll2" parameterType="map" resultMap="BaseResultMap" useCache="true">
+		select t2.*, t1.c_name,t3.u_name from tb_company_auth t2 
+		left join tb_company t1 on t1.c_id = t2.company_id
+		left join tb_user t3 on t2.user_id = t3.u_id
+		<where>
+			<choose>
+				<when test="query_expr != null and (query_expr == 'like' or query_expr == 'not like')">
+					<if test="userName != null and userName != ''">
+						and u_name ${query_expr} '%${userName}%'
+					</if>
+					<if test="companyName != null and companyName != ''">
+						and c_name ${query_expr} '%${companyName}%'
+					</if>
+					
+				</when>
+				<when test="query_expr != null and (query_expr != 'like' and query_expr != 'not like')">
+					<if test="userName != null and userName != ''">
+						and u_name ${query_expr} #{userName}
+					</if>
+					<if test="companyName != null and companyName != ''">
+						and c_name ${query_expr} #{companyName}
+					</if>
+					
+				</when>
+				<otherwise>
+					<if test="createTime != null and startDate != null">
+						and create_time &gt;= #{startDate}
+					</if>
+					<if test="createTime != null and endDate != null">
+						and create_time &lt;= #{endDate}
+					</if>
+					<if test="updateTime != null and startDate != null">
+						and update_time &gt;= #{startDate}
+					</if>
+					<if test="updateTime != null and endDate != null">
+						and update_time &lt;= #{endDate}
+					</if>
+       		 	</otherwise>
+			</choose>
+		</where>
+		order by create_time DESC
+	</select>
+	
+	<select id="queryListByPage" parameterType="map" resultMap="BaseResultMap" useCache="true">
+		select t2.*, t1.c_name,t3.u_name from tb_company_auth t2 
+		left join tb_company t1 on t1.c_id = t2.company_id
+		left join tb_user t3 on t2.user_id = t3.u_id
+		<where>
+			<choose>
+				<when test="query_expr != null and (query_expr == 'like' or query_expr == 'not like')">
+					<if test="userName != null and userName != ''">
+						and u_name ${query_expr} '%${userName}%'
+					</if>
+					<if test="companyName != null and companyName != ''">
+						and c_name ${query_expr} '%${companyName}%'
+					</if>
+					
+				</when>
+				<when test="query_expr != null and (query_expr != 'like' and query_expr != 'not like')">
+					<if test="userName != null and userName != ''">
+						and u_name ${query_expr} #{userName}
+					</if>
+					<if test="companyName != null and companyName != ''">
+						and c_name ${query_expr} #{companyName}
+					</if>
+					
+				</when>
+				<otherwise>
+					<if test="createTime != null and startDate != null">
+						and create_time &gt;= #{startDate}
+					</if>
+					<if test="createTime != null and endDate != null">
+						and create_time &lt;= #{endDate}
+					</if>
+					<if test="updateTime != null and startDate != null">
+						and update_time &gt;= #{startDate}
+					</if>
+					<if test="updateTime != null and endDate != null">
+						and update_time &lt;= #{endDate}
+					</if>
+       		 	</otherwise>
+			</choose>
+		</where>
+		order by create_time DESC
+	</select>
+	
+	<select id="queryListAll" parameterType="map" resultMap="BaseResultMap" useCache="true">
+		select t2.*, t1.c_name,t3.u_name from tb_company_auth t2 
+		left join tb_company t1 on t1.c_id = t2.company_id
+		left join tb_user t3 on t2.user_id = t3.u_id
+		<if test="userId != null and userId != ''">
+			and user_id = #{userId}
+		</if>
+		<if test="companyId != null and companyId != ''">
+			and company_id = #{companyId}
+		</if>
+	</select>
+	
+	<select id="queryNames" parameterType="map" resultMap="pairNameMap" useCache="false">
+		SELECT c_id, c_name	FROM tb_company t1 left join tb_company_auth t2 on t1.c_id = t2.company_id
+		<where>
+			<choose>
+				<when test="queryAuth != null">
+					t2.company_id is not null
+				</when>
+				<when test="queryNotAuth != null">
+					t2.company_id is null
+				</when>
+				<otherwise>
+					t2.company_id is not null and t2.user_id=#{userId}
+				</otherwise>
+			</choose>
+		</where>
+		order by c_id DESC
+	</select>
+			
+	<select id="count" parameterType="map" resultType="int" useCache="false">
+		SELECT count(*) FROM tb_company_auth 
+	</select>
+	
+	<insert id="insert" parameterType="com.webside.business.model.CompanyAuthEntity" useGeneratedKeys="true" keyProperty="id">
+		insert ignore into tb_company_auth (
+			company_id,
+			user_id,
+			auth_code,
+			note,
+			create_time
+			)   
+		values (
+			#{companyId},
+			#{userId},
+			#{authCode},
+			#{note},
+			now()
+			)  
+	</insert>	
+	
+	<update id="update" parameterType="com.webside.business.model.CompanyAuthEntity">
+	    update tb_company_auth
+	    <set>
+	      <if test="userId != null">
+	        user_id = #{userId},
+	      </if>
+	      <if test="companyId != null">
+	        company_id = #{companyId},
+	      </if>
+	      <if test="authCode != null">
+	        auth_code = #{authCode},
+	      </if>
+	      <if test="note != null">
+	        note = #{note,jdbcType=VARCHAR},
+	      </if>
+	      update_time = now()
+	    </set>
+	    where id = #{id}
+	  </update>
+  
+	<delete id="deleteBatchById" parameterType="list">
+       delete from tb_company_auth where id in  
+	    <foreach collection="list" item = "id" open="(" separator="," close=")">
+	    ${id}  
+	    </foreach>  
+	</delete>
+</mapper>

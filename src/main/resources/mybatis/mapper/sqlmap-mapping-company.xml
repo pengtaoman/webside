@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webside.user.mapper.CompanyMapper">
+	
+	<!--mybatis ehcache缓存配置,以下两个<cache>标签二选一,第一个可以输出日志,第二个不输出日志 -->
+	 
+	<cache type="org.mybatis.caches.ehcache.LoggingEhcache"/> 
+	 
+	<!-- <cache type="org.mybatis.caches.ehcache.EhcacheCache"/> -->
+
+	<sql id="companyAttributes">
+		c_id,
+		c_name,
+		c_status,
+		c_telephone,
+		c_contact_person,
+		c_mobile,
+		c_fax,
+		c_address,
+		c_region_code,
+		c_remark,
+		c_cert,
+		u_root_id,
+		c_creator_name,
+		c_create_time,
+		c_update_time
+	</sql>
+	
+	<resultMap id="pairNameMap" type="com.webside.base.basemodel.PairName">
+		<id property="id" column="c_id"/>
+		<result property="text" column="c_name" />
+	</resultMap>
+	
+	<resultMap id="companyMap" type="com.webside.user.model.CompanyEntity">
+		<id property="id" column="c_id"/>
+		<result property="name" column="c_name"/>
+		<result property="status" column="c_status"/>
+		<result property="telephone" column="c_telephone"/>
+		<result property="contactPerson" column="c_contact_person"/>
+		<result property="mobile" column="c_mobile"/>
+		<result property="fax" column="c_fax"/>
+		<result property="address" column="c_address"/>
+		<result property="regionCode" column="c_region_code"/>
+		<result property="cert" column="c_cert"/>
+		<result property="remark" column="c_remark"/>
+		<result property="rootId" column="u_root_id"/>
+		<result property="creatorName" column="c_creator_name"/>
+		<result property="createTime" column="c_create_time"/>
+		<result property="updateTime" column="c_update_time"/>
+	</resultMap>
+	
+	<select id="findByName" parameterType="String" resultMap="companyMap" flushCache="false" useCache="true">
+		SELECT <include refid="companyAttributes" /> 
+		FROM tb_company t1 
+		where t1.c_name = #{name}
+	</select>
+	
+	<select id="queryListByPage" parameterType="map" resultMap="companyMap">
+		SELECT <include refid="companyAttributes" /> 
+		FROM tb_company t1 
+		<where>
+			<if test="name != null and name != ''">
+				and t1.c_name like '%${name}%'
+			</if>
+		</where>
+		order by c_id DESC
+	</select>
+
+	<select id="queryNames" parameterType="map" resultMap="pairNameMap">
+		SELECT c_id, c_name	FROM tb_company t1 
+		<where>
+			<if test="name != null and name != ''">
+				and t1.c_name = #{name}
+			</if>
+		</where>
+		order by c_id DESC
+	</select>
+	
+	<select id="findById" parameterType="long" resultMap="companyMap" useCache="false">
+		SELECT <include refid="companyAttributes" /> 
+		FROM tb_company 
+		where c_id = ${id}
+	</select>
+	
+	<select id="findByRootId" parameterType="long" resultMap="companyMap" useCache="false">
+		SELECT <include refid="companyAttributes" /> 
+		FROM tb_company 
+		where u_root_id = ${rootId}
+	</select>
+	
+	<insert id="insert" parameterType="com.webside.user.model.CompanyEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_company (c_name, u_root_id, 
+		c_contact_person, c_mobile, c_fax, 
+						      c_status, c_telephone, c_address,  c_region_code,
+						      c_cert, c_remark,c_creator_name, c_create_time)  
+		values (
+			#{name},
+			#{rootId},
+			#{contactPerson},
+			#{mobile},
+			#{fax},
+			#{status},
+			#{telephone},
+			#{address},
+			#{regionCode},
+			#{cert},
+			#{remark},
+			#{creatorName},
+			now()
+			)  
+	</insert>
+	
+	<update id="updateStatusBatch" parameterType="map" flushCache="true">		
+       update tb_company 
+       <set>
+			<if test="status != null and status != ''">
+				c_status = #{status},
+			</if>
+			<if test="reason != null and reason != ''">
+				c_remark = #{reason},
+			</if>
+	    </set>
+	       where c_id in  
+		    <foreach collection="ids" item = "id" open="(" separator="," close=")">
+		    	#{id}  
+		    </foreach> 
+	</update>
+	
+	<update id="updateStatus" parameterType="map" flushCache="true">
+		update tb_company 
+		<set>
+			<if test="status != null and status != ''">
+				c_status = #{status},
+			</if>
+			<if test="reason != null and reason != ''">
+				c_remark = #{reason},
+			</if>
+	    </set>
+		where c_id = #{id}
+	</update>
+	
+	<update id="updateRemark" parameterType="map" flushCache="true">
+		update tb_company set
+		c_status = #{remark}
+		where c_id = #{id}
+	</update>
+	<update id="updateCert" parameterType="map" flushCache="true">
+		update tb_company set
+		c_cert = #{cert}
+		where c_id = #{id}
+	</update>
+	
+	<update id="updateInfo" parameterType="com.webside.user.model.CompanyEntity" flushCache="true">
+		update tb_company 
+		<set>
+			<if test="name != null and name != ''">
+					c_name = #{name},
+			</if>
+			<if test="contactPerson != null and contactPerson != ''">
+					c_contact_person = #{contactPerson},
+			</if>
+			<if test="mobile != null and mobile != ''">
+					c_mobile = #{mobile},
+			</if>
+			<if test="fax != null and fax != ''">
+					c_fax = #{fax},
+			</if>
+			<if test="telephone != null and telephone != ''">
+					c_telephone = #{telephone},
+			</if>
+			<if test="address != null and address != ''">
+					c_address = #{address},
+			</if>
+			<if test="regionCode != null and regionCode != ''">
+					c_region_code = #{regionCode},
+			</if>
+			<if test="cert != null and cert != ''">
+					c_cert = #{cert},
+			</if>
+		</set>
+		where c_id = #{id}
+	</update>
+			
+	<delete id="deleteById" parameterType="long">		
+       delete from tb_company where c_id = #{id} 	    
+	</delete>
+	
+	<delete id="deleteBatchById" parameterType="list">
+       delete from tb_company where c_id in  
+	    <foreach collection="list" item = "id" open="(" separator="," close=")">
+	    #{id}  
+	    </foreach>  
+	</delete>
+	
+	<select id="count" parameterType="map" resultType="int" useCache="false">
+		SELECT count(*) FROM tb_company
+	</select>
+	<select id="queryCompanyIdByCname" parameterType="map" resultType="java.lang.Long" useCache="true">
+		select c_id from tb_company
+		<where>
+			<choose>
+				<when
+					test="query_expr != null and (query_expr == 'like' or query_expr == 'not like')">
+					<if test="companyName != null and companyName != ''">
+						and c_name ${query_expr} '%${companyName}%'
+					</if>
+				</when>
+				<when
+					test="query_expr != null and query_expr != 'like' and query_expr != 'not like'">
+					<if test="companyName != null and companyName != ''">
+						and c_name ${query_expr} #{companyName}
+					</if>
+				</when>
+			</choose>
+		</where>
+	</select>
+</mapper>
