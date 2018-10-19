@@ -979,6 +979,7 @@ var webside = {
 					id : facilityStateInit,
 					text : facilityStateNameInit
 				} ];
+				//alert(JSON.stringify(data))
 				$('#facilityState').select2({
 					data: data,
 					placeholder : '请选择',

@@ -48,6 +48,13 @@ function initDateContrl(){
 	//webside.form.facility.initTestRange();
 	webside.form.facility.initFacilityState(); 
 	webside.form.facility.validateFacilityForm(); 
+	
+	//added by pengtao begin
+	<%if(!("t".equals((String)request.getAttribute("isAdd")))) {%>
+		webside.form.facility.initIfTest();
+	<%}%>
+	webside.form.facility.initFacilityState();
+	//end
 	initDateContrl();
 });
  

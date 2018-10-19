@@ -71,7 +71,7 @@ var dtGridColumns = [{
     }
 }, {
     id : 'ifTest',
-    title : '是否检测',
+    title : '是否可检测',
     type : 'string',
     columnClass : 'text-center',
     headerClass : 'dlshouwen-grid-header',

@@ -451,6 +451,9 @@ public class FacilityController extends BaseController {
 	public String addUI(Model model, HttpServletRequest request) {
 		try
 		{
+			//added by pengtao begin
+			request.setAttribute("isAdd", "t");
+			//end
 			return Common.BACKGROUND_PATH + "/facility/form";
 		}catch(Exception e)
 		{
@@ -542,7 +545,21 @@ public class FacilityController extends BaseController {
 			if (codeEntity == null) {
 				model.addAttribute("facilityStateName", "未知");
 			} else {
-				model.addAttribute("facilityStateName", facilityEntity.getFacilityState());
+				//modified by pengtao begin
+				@SuppressWarnings({ "unchecked", "rawtypes" })
+				Map<String, List<Map>> fs  = (Map<String, List<Map>>)this.facilityState();
+				@SuppressWarnings("rawtypes")
+				List<Map> fss = fs.get("results");
+				//System.out.println("!!!!!" +fss.size());
+				for (@SuppressWarnings("rawtypes") Map mp: fss) {
+					//System.out.println("!!!!!" + mp.get("id") + " --- " + mp.get("text"));
+					if (mp.get("id").equals(facilityEntity.getFacilityState())) {
+						model.addAttribute("facilityStateName", mp.get("text"));
+						break;
+					}
+				}
+				//model.addAttribute("facilityStateName", facilityEntity.getFacilityState());
+				//end
 			}
 			
 			CodeEntity codeEntity2 = codeService.query(facilityEntity.getIfTest(), "ifTest");

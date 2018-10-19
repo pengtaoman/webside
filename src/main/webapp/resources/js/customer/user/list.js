@@ -115,7 +115,7 @@ var dtGridOption = {
     pageSizeLimit : [10, 20, 30],
     onRowClick : function(value, record, column, grid, dataNo, columnNo, cell, row, extraCell, e){
     	row.children()[1].children[0].checked = !row.children()[1].children[0].checked;
-    }
+    },
 };
 
 var grid = $.fn.dlshouwen.grid.init(dtGridOption);
